@@ -258,7 +258,7 @@ plot_SIV_histogram <- function(serobj, score_col = "SIV_UCell",
                                cutoff = NULL) {
   if (is.null(cutoff)) cutoff <- serobj@misc$SIV_threshold
   ggplot(serobj@meta.data, aes(x = !!sym(score_col))) +
-    geom_histogram(aes(fill = after_stat(x)), bins = 80, color = "black", size = 0.1) +
+    geom_histogram(aes(fill = after_stat(x)), bins = 80, color = "black", linewidth = 0.1) +
     scale_fill_gradientn(colours = palette, name = score_col) +
     geom_vline(xintercept = cutoff, color = "black",
                linetype = "dashed", linewidth = 0.8) +
