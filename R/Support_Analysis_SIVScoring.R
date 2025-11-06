@@ -834,14 +834,16 @@ build_rois_fast <- function(meta,
 #' is used to select one or more nearby control centers that have similar neighborhood
 #' density, ensuring comparable sampling for downstream case–control comparisons.
 #'
-#' @param meta A data frame of per-cell metadata containing spatial coordinates and
-#'   infection flags. Must include the columns:
+#' @param meta A data frame of per-cell metadata with:
 #'   \describe{
-#'     \item{\code{x_slide_mm}}{Numeric x-coordinate (in mm).}
-#'     \item{\code{y_slide_mm}}{Numeric y-coordinate (in mm).}
+#'     \item{x_slide_mm}{Numeric x-coordinate (in mm).}
+#'     \item{y_slide_mm}{Numeric y-coordinate (in mm).}
 #'   }
-#' @param case_centers A data frame of case ROI centers (e.g., SIV-plausible seed
-#'   positions) with columns \code{x_slide_mm} and \code{y_slide_mm}.
+#' @param case_centers A data frame of case ROI centers with columns:
+#'   \describe{
+#'     \item{x_slide_mm}{X-coordinate of ROI center (mm).}
+#'     \item{y_slide_mm}{Y-coordinate of ROI center (mm).}
+#'   }
 #' @param r_mm Numeric. ROI radius in millimeters; defines the neighborhood
 #'   used for density comparison and exclusion of nearby SIV-plausible regions.
 #' @param n_controls Integer. Number of matched control centers to generate per case
@@ -857,13 +859,12 @@ build_rois_fast <- function(meta,
 #' @param min_sep Numeric. Minimum separation (in mm) between control centers to
 #'   prevent spatial overlap (default: \code{r_mm}).
 #'
-#' @return A data frame of matched control centers with columns:
+#' @return A data frame of control ROI centers with:
 #'   \describe{
-#'     \item{\code{x_slide_mm}, \code{y_slide_mm}}{Control ROI coordinates.}
-#'     \item{\code{case_id}}{Identifier of the matched case ROI.}
-#'     \item{\code{control_rank}}{Sequential index for controls per case.}
-#'     \item{\code{control_id}}{Unique combined case/control identifier
-#'       (\code{"case_i_ctrl_j"}).}
+#'     \item{x_slide_mm, y_slide_mm}{Coordinates of each control ROI center.}
+#'     \item{case_id}{ID of the matched case ROI.}
+#'     \item{control_rank}{Numeric rank of control (1..n_controls).}
+#'     \item{control_id}{Unique control ROI identifier.}
 #'   }
 #'
 #' @details

@@ -1,7 +1,7 @@
 Package: CellNicheR
 Type: Package
 Title: A package for spatial analysis in R
-Version: 1.0.0
+Version: 0.0.1
 Author: Eisa Mahyari
 Description: Wrappers and pipelines to process spatial omics and imaging data
 Encoding: UTF-8
@@ -11,10 +11,10 @@ License: GPL-3
 Depends:
     R (>= 4.1.0),
 Imports:
-    Seurat,
-    SeuratObject,
+    Seurat (>= 5.3.0),
+    SeuratObject (>= 5.2.0),
     rlang,
-    UCell (>= 2.6.0),
+    UCell (>= 2.10.0),
     dplyr,
     Matrix,
     SingleCellExperiment,
