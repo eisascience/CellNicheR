@@ -851,7 +851,7 @@ build_rois_fast <- function(meta,
 #'   center (default: 2).
 #' @param density_tol Numeric fraction (default: 0.20). Tolerance for acceptable
 #'   differences in local cell density between case and control ROIs. For example,
-#'   \code{0.20} allows ±20% variation in the number of cells within \code{r_mm}.
+#'   \code{0.20} allows ±20\% variation in the number of cells within \code{r_mm}.
 #' @param plausible_col Character string specifying the column name in \code{meta}
 #'   that indicates SIV-plausible cells (default: \code{"SIV_Plausible"}).
 #' @param attempts_per_case Integer (default: 500). Maximum number of random attempts
