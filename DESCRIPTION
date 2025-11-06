@@ -26,7 +26,10 @@ Imports:
     patchwork,
     BiocParallel,
     ggcorrplot,
-    data.table
+    data.table,
+    scales,
+    tidyr,
+    FNN
 Suggests:
     devtools,
     SeuratData,

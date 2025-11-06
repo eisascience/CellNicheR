@@ -108,6 +108,7 @@ add_SIV_plausible <- function(serobj, celltype_col, susceptible_types) {
 #'                               title = "SIV_UCell spatial distribution")
 #' print(p_spatial)
 #'
+#' @importFrom rlang sym
 #' @export
 plot_spatial_SIV <- function(serobj, color_col = "SIV_UCell",
                              palette = c("white", "grey", "lightblue", "gold", "red"),
@@ -149,6 +150,7 @@ plot_spatial_SIV <- function(serobj, color_col = "SIV_UCell",
 #'                              legend_title = "SIV+")
 #' print(p_bin)
 #'
+#' @importFrom rlang sym
 #' @export
 plot_spatial_binary <- function(serobj,
                                 flag_col = "SIV_Positive",
@@ -249,13 +251,14 @@ plot_spatial_plausible <- function(serobj) {
 #'                              cutoff = serobj@misc$SIV_threshold)
 #' print(p_hist)
 #'
+#' @importFrom rlang sym
 #' @export
 plot_SIV_histogram <- function(serobj, score_col = "SIV_UCell",
                                palette = c("white", "grey", "lightblue", "gold", "red"),
                                cutoff = NULL) {
   if (is.null(cutoff)) cutoff <- serobj@misc$SIV_threshold
   ggplot(serobj@meta.data, aes(x = !!sym(score_col))) +
-    geom_histogram(aes(fill = ..x..), bins = 80, color = "black", size = 0.1) +
+    geom_histogram(aes(fill = after_stat(x)), bins = 80, color = "black", size = 0.1) +
     scale_fill_gradientn(colours = palette, name = score_col) +
     geom_vline(xintercept = cutoff, color = "black",
                linetype = "dashed", linewidth = 0.8) +
@@ -312,6 +315,7 @@ plot_SIV_histogram <- function(serobj, score_col = "SIV_UCell",
 #'   label_title = "Plausible SIV+"
 #' )
 #'
+#' @importFrom scales percent_format
 #' @export
 summarize_SIV_by_celltype <- function(serobj, celltype_col,
                                       flag_col = "SIV_Positive",
@@ -423,6 +427,7 @@ summarize_SIV_by_celltype <- function(serobj, celltype_col,
 #' )
 #' print(combined_plot)
 #'
+#' @importFrom Seurat NoLegend
 #' @export
 run_SIV_visualization <- function(serobj, celltype_col,
                                   susceptible_types,

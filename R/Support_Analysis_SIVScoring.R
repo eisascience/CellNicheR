@@ -30,6 +30,7 @@
 #' )
 #' ggplot() + scale_bar$bg + scale_bar$rect + scale_bar$label
 #'
+#' @importFrom grid rectGrob textGrob gpar
 #' @export
 make_scale_bar_r <- function(x_vals, y_vals, microns_per_pixel = 0.12028) {
   
@@ -353,7 +354,7 @@ neighborhood_plot <- function(
 #' )
 #' print(p_gene)
 #'
-#' @seealso [neighborhood_plot()], [make_scale_bar_r()]
+#' @seealso \code{\link{neighborhood_plot}}, \code{\link{make_scale_bar_r}}
 #' @export
 neighborhood_plot2 <- function(
     cell_meta,
@@ -1017,6 +1018,7 @@ make_control_centers <- function(meta, case_centers, r_mm = 0.05, n_controls = 2
 #' \code{\link{run_roi_pipeline_one}}, \code{\link{build_rois_fast}},
 #' and \code{\link{compute_overlap_stats}} for related ROI processing functions.
 #'
+#' @importFrom tidyr pivot_wider
 #' @export
 summarize_rois <- function(roi_long,
                            celltype_col,
