@@ -571,7 +571,18 @@ run_roi_pipeline_one <- function(serobj, celltype_col,
   
   roi_sum <- summarize_rois(roi_long, celltype_col)
   message("ROI pipeline completed: ", nrow(roi_sum), " summarized entries.")
-  list(roi_cells = roi_long, roi_summary = roi_sum)
+  
+  new_CellNicheRresults(
+    roi_cells = roi_long,
+    roi_summary = roi_sum,
+    meta = meta,
+    params = list(
+      r_mm = r_mm,
+      n_controls = n_controls,
+      density_tol = density_tol,
+      min_sep = min_sep
+    )
+  )
 }
 
 

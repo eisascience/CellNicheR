@@ -1125,3 +1125,76 @@ compute_overlap_stats <- function(centers, r){
     frac_circles_that_overlap_any = mean(apply(mat < (2*r) & !diag(n), 1, any))
   )
 }
+
+
+
+
+#' Analyze and Visualize Cell-Type Composition within ROIs
+#'
+#' Computes per-ROI cell-type fractions, averages by ROI type (case/control),
+#' and generates data for comparative visualization.
+#'
+#' @param result A \code{CellNicheResults} object (from \code{run_roi_pipeline_one()}).
+#' @param celltype_col Character. The column name in \code{result$roi_cells}
+#'   containing cell-type annotations.
+#' @param top_n Integer (default: 15). Number of most abundant cell types to retain.
+#'
+#' @return An object of class \code{"CellNicheComposition"} containing:
+#' \describe{
+#'   \item{\code{roi_ct_frac}}{Per-ROI cell-type fractions.}
+#'   \item{\code{mean_ct_by_type}}{Mean cell-type fraction per ROI type.}
+#'   \item{\code{top_celltypes}}{Character vector of top cell types used in plotting.}
+#'   \item{\code{params}}{List of function parameters.}
+#' }
+#'
+#' @examples
+#' comp <- analyze_celltype_composition(results_ls[[1]],
+#'   celltype_col = "RNA_Pre.Napari.v3.0.071825_Cell.Typing.InSituType.2_1_clusters"
+#' )
+#' plot(comp)
+#'
+#' @importFrom dplyr group_by summarise mutate ungroup rename filter arrange slice_head
+#' @importFrom ggplot2 ggplot aes geom_col coord_flip scale_y_continuous scale_fill_manual labs theme_classic
+#' @importFrom scales percent_format
+#' @export
+analyze_celltype_composition <- function(result, celltype_col, top_n = 15) {
+  stopifnot(inherits(result, "CellNicheResults"))
+  
+  rc <- result$roi_cells
+  stopifnot(celltype_col %in% names(rc))
+  
+  # 1️⃣ Per-ROI cell-type fractions
+  roi_ct_frac <- rc %>%
+    dplyr::filter(!is.na(.data[[celltype_col]])) %>%
+    dplyr::group_by(roi_id, roi_type, !!rlang::sym(celltype_col)) %>%
+    dplyr::summarise(n = dplyr::n(), .groups = "drop_last") %>%
+    dplyr::mutate(frac = n / sum(n)) %>%
+    dplyr::ungroup() %>%
+    dplyr::rename(CellType = !!celltype_col)
+  
+  # 2️⃣ Mean cell-type fraction by ROI type
+  mean_ct_by_type <- roi_ct_frac %>%
+    dplyr::group_by(roi_type, CellType) %>%
+    dplyr::summarise(mean_frac = mean(frac, na.rm = TRUE), .groups = "drop")
+  
+  # 3️⃣ Select top N cell types
+  keep_ct <- mean_ct_by_type %>%
+    dplyr::group_by(CellType) %>%
+    dplyr::summarise(overall = mean(mean_frac), .groups = "drop") %>%
+    dplyr::arrange(dplyr::desc(overall)) %>%
+    dplyr::slice_head(n = top_n) %>%
+    dplyr::pull(CellType)
+  
+  mean_ct_by_type_top <- mean_ct_by_type %>%
+    dplyr::filter(CellType %in% keep_ct)
+  
+  structure(
+    list(
+      roi_ct_frac = roi_ct_frac,
+      mean_ct_by_type = mean_ct_by_type_top,
+      top_celltypes = keep_ct,
+      params = list(celltype_col = celltype_col, top_n = top_n)
+    ),
+    class = "CellNicheComposition"
+  )
+}
