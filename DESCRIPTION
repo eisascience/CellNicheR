@@ -1,0 +1,38 @@
+Package: CellNicheR
+Type: Package
+Title: A package for spatial analysis in R
+Version: 1.0.0
+Author: Eisa Mahyari
+Description: Wrappers and pipelines to process spatial omics and imaging data
+Encoding: UTF-8
+URL: https://eisascience.github.io/CellNicheR/
+LazyData: true
+License: GPL-3
+Depends:
+    R (>= 4.1.0),
+Imports:
+    Seurat,
+    SeuratObject,
+    rlang,
+    UCell (>= 2.6.0),
+    dplyr,
+    Matrix,
+    SingleCellExperiment,
+    knitr,
+    future,
+    ggplot2,
+    reticulate,
+    naturalsort,
+    patchwork,
+    BiocParallel,
+    ggcorrplot,
+    data.table
+Suggests:
+    devtools,
+    SeuratData,
+    rmdformats
+Remotes:
+    SeuratData=satijalab/seurat-data,
+    carmonalab/UCell
+RoxygenNote: 7.3.2
+VignetteBuilder: knitr

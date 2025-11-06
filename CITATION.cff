@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as follows."
+title: "CellNicheR"
+authors:
+  - name: "Eisa Mahyari"
+    affiliation: "Estes Lab - Oregon Health & Science University"
+date-released: "2025-Nov-01"
+version: "0.0.1"
+repository-code: "https://github.com/eisascience/CellNicheR"
+license: "GPL-3"
+url: "https://eisascience.github.io/CellNicheR/"
