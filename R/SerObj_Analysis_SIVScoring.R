@@ -448,7 +448,86 @@ run_SIV_visualization <- function(serobj, celltype_col,
 
 
 
-
+#' Run the ROI Construction and Summarization Pipeline for a Single Sample
+#'
+#' Executes the full region-of-interest (ROI) workflow on a single Seurat object,
+#' including selection of spatially independent hotspot seeds, construction of
+#' corresponding ROIs, generation of matched control ROIs, and ROI-level summarization
+#' of cell composition and SIV metrics.
+#'
+#' @param serobj A \code{Seurat} object containing spatial single-cell metadata in
+#'   \code{serobj@meta.data}. Must include at least:
+#'   \describe{
+#'     \item{\code{x_slide_mm}}{Numeric x-coordinate in millimeters.}
+#'     \item{\code{y_slide_mm}}{Numeric y-coordinate in millimeters.}
+#'     \item{\code{SIV_UCell}}{Numeric infection or activation score per cell.}
+#'     \item{\code{SIV_Plausible}}{Logical flag indicating cells plausibly SIV+.}
+#'   }
+#' @param celltype_col Character string specifying the metadata column containing
+#'   cell-type annotations.
+#' @param r_mm Numeric. Radius (in millimeters) used to define circular ROIs
+#'   around hotspot centers (default: \code{0.05}).
+#' @param max_seeds Integer. Maximum number of hotspot seeds to select
+#'   (default: \code{Inf}).
+#' @param n_controls Integer. Number of matched control ROIs to generate per
+#'   hotspot (default: \code{2}).
+#' @param density_tol Numeric. Permitted tolerance (fractional) in cell density
+#'   between case and control ROIs (default: \code{0.20}, i.e., ±20\%). Controls
+#'   are matched to have similar local cellular density.
+#' @param min_sep Numeric. Minimum distance (in mm) between hotspot seed centers
+#'   to enforce spatial independence (default: \code{0.05}).
+#'
+#' @return A named list with two elements:
+#' \describe{
+#'   \item{\code{roi_cells}}{A long-format data frame of all cells included in
+#'         case and control ROIs. Each cell retains original metadata plus ROI
+#'         identifiers and attributes.}
+#'   \item{\code{roi_summary}}{A summarized data frame (one row per ROI)
+#'         containing cell counts, fractions of SIV+ and plausible cells,
+#'         mean/median SIV scores, and per-ROI cell-type composition.}
+#' }
+#'
+#' @details
+#' This function integrates multiple modular steps:
+#' \enumerate{
+#'   \item \strong{Seed selection:} Calls \code{\link{select_hotspot_seeds}} to identify
+#'         high-scoring, spatially independent SIV+ candidate centers.
+#'   \item \strong{Case ROI construction:} Builds circular ROIs around seed centers using
+#'         \code{\link{build_rois_fast}}.
+#'   \item \strong{Control ROI matching:} Generates matched control ROIs far from
+#'         plausible SIV+ cells via \code{\link{make_control_centers}}.
+#'   \item \strong{Summarization:} Collapses ROIs into per-ROI summaries using
+#'         \code{\link{summarize_rois}}.
+#' }
+#'
+#' Each ROI is labeled as either \code{"case"} (SIV+ neighborhood) or
+#' \code{"control"} (density-matched uninfected neighborhood).
+#'
+#' If no plausible SIV+ seeds are detected, an informative message is printed and
+#' an empty result is returned.
+#'
+#' @examples
+#' # Example with synthetic metadata
+#' so <- Seurat::CreateSeuratObject(
+#'   data.frame(SIV_UCell = runif(500),
+#'              SIV_Plausible = sample(c(TRUE, FALSE), 500, TRUE),
+#'              x_slide_mm = runif(500, 0, 2),
+#'              y_slide_mm = runif(500, 0, 2))
+#' )
+#' results <- run_roi_pipeline_one(
+#'   serobj = so,
+#'   celltype_col = "celltype",
+#'   r_mm = 0.05,
+#'   n_controls = 1
+#' )
+#'
+#' @seealso
+#' \code{\link{select_hotspot_seeds}}, \code{\link{build_rois_fast}},
+#' \code{\link{make_control_centers}}, \code{\link{summarize_rois}}
+#' for component functions within this pipeline.
+#'
+#' @importFrom dplyr bind_rows case_when
+#' @export
 run_roi_pipeline_one <- function(serobj, celltype_col,
                                  r_mm = 0.05, max_seeds = Inf,
                                  n_controls = 2, density_tol = 0.20, min_sep = 0.05) {
