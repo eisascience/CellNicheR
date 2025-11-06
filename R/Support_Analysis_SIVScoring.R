@@ -30,6 +30,7 @@
 #' )
 #' ggplot() + scale_bar$bg + scale_bar$rect + scale_bar$label
 #'
+#' @importFrom grid rectGrob textGrob gpar
 #' @export
 make_scale_bar_r <- function(x_vals, y_vals, microns_per_pixel = 0.12028) {
   
@@ -353,7 +354,7 @@ neighborhood_plot <- function(
 #' )
 #' print(p_gene)
 #'
-#' @seealso [neighborhood_plot()], [make_scale_bar_r()]
+#' @seealso \code{\link{neighborhood_plot}}, \code{\link{make_scale_bar_r}}
 #' @export
 neighborhood_plot2 <- function(
     cell_meta,
@@ -850,7 +851,7 @@ build_rois_fast <- function(meta,
 #'   center (default: 2).
 #' @param density_tol Numeric fraction (default: 0.20). Tolerance for acceptable
 #'   differences in local cell density between case and control ROIs. For example,
-#'   \code{0.20} allows ±20% variation in the number of cells within \code{r_mm}.
+#'   \code{0.20} allows ±20\% variation in the number of cells within \code{r_mm}.
 #' @param plausible_col Character string specifying the column name in \code{meta}
 #'   that indicates SIV-plausible cells (default: \code{"SIV_Plausible"}).
 #' @param attempts_per_case Integer (default: 500). Maximum number of random attempts
@@ -1017,6 +1018,7 @@ make_control_centers <- function(meta, case_centers, r_mm = 0.05, n_controls = 2
 #' \code{\link{run_roi_pipeline_one}}, \code{\link{build_rois_fast}},
 #' and \code{\link{compute_overlap_stats}} for related ROI processing functions.
 #'
+#' @importFrom tidyr pivot_wider
 #' @export
 summarize_rois <- function(roi_long,
                            celltype_col,
