@@ -1130,23 +1130,23 @@ compute_overlap_stats <- function(centers, r){
 
 
 
-
 #' Analyze and Visualize Cell-Type Composition within ROIs
 #'
-#' Computes per-ROI cell-type fractions, averages by ROI type (case/control),
-#' and generates data for comparative visualization.
+#' Computes per-ROI cell-type fractions, averages by ROI type (e.g., case vs control),
+#' and prepares results for comparative visualization.
 #'
-#' @param result A \code{CellNicheResults} object (from \code{run_roi_pipeline_one()}).
-#' @param celltype_col Character. The column name in \code{result$roi_cells}
-#'   containing cell-type annotations.
-#' @param top_n Integer (default: 15). Number of most abundant cell types to retain.
+#' @param result A \code{CellNicheResults} object returned by \code{run_roi_pipeline_one()}.
+#' @param celltype_col Character string giving the column name in \code{result$roi_cells}
+#'   that contains cell-type annotations.
+#' @param top_n Integer specifying the number of most abundant cell types to retain
+#'   for summary and plotting (default: 15).
 #'
 #' @return An object of class \code{"CellNicheComposition"} containing:
 #' \describe{
-#'   \item{\code{roi_ct_frac}}{Per-ROI cell-type fractions.}
-#'   \item{\code{mean_ct_by_type}}{Mean cell-type fraction per ROI type.}
-#'   \item{\code{top_celltypes}}{Character vector of top cell types used in plotting.}
-#'   \item{\code{params}}{List of function parameters.}
+#'   \item{\code{roi_ct_frac}}{A data frame of per-ROI cell-type fractions.}
+#'   \item{\code{mean_ct_by_type}}{A data frame of mean cell-type fractions per ROI type.}
+#'   \item{\code{top_celltypes}}{Character vector of cell types retained for visualization.}
+#'   \item{\code{params}}{List of input parameters used for the analysis.}
 #' }
 #'
 #' @examples
@@ -1165,7 +1165,7 @@ analyze_celltype_composition <- function(result, celltype_col, top_n = 15) {
   rc <- result$roi_cells
   stopifnot(celltype_col %in% names(rc))
   
-  # 1️⃣ Per-ROI cell-type fractions
+  # Per-ROI cell-type fractions
   roi_ct_frac <- rc %>%
     dplyr::filter(!is.na(.data[[celltype_col]])) %>%
     dplyr::group_by(roi_id, roi_type, !!rlang::sym(celltype_col)) %>%
@@ -1174,12 +1174,12 @@ analyze_celltype_composition <- function(result, celltype_col, top_n = 15) {
     dplyr::ungroup() %>%
     dplyr::rename(CellType = !!celltype_col)
   
-  # 2️⃣ Mean cell-type fraction by ROI type
+  # Mean cell-type fraction per ROI type
   mean_ct_by_type <- roi_ct_frac %>%
     dplyr::group_by(roi_type, CellType) %>%
     dplyr::summarise(mean_frac = mean(frac, na.rm = TRUE), .groups = "drop")
   
-  # 3️⃣ Select top N cell types
+  # Select top N cell types
   keep_ct <- mean_ct_by_type %>%
     dplyr::group_by(CellType) %>%
     dplyr::summarise(overall = mean(mean_frac), .groups = "drop") %>%
